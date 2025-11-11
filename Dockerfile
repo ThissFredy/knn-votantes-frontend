@@ -26,6 +26,7 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV PORT 3000
+ENV HOST 0.0.0.0
 
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/public ./public
@@ -33,7 +34,7 @@ COPY --from=builder /app/.next/static ./.next/static
 
 RUN chown -R node:node /app
 
-# Usas el usuario no-root (que ya existe en la imagen)
+# Usas el usuario no-root
 USER node
 
 EXPOSE 3000

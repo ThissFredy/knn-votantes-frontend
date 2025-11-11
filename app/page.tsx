@@ -186,7 +186,7 @@ export default function HomePage() {
                     {error && (
                         <div className="bg-red-800 border border-red-600 text-white p-4 rounded-lg">
                             <h3 className="font-bold">Error</h3>
-                            <p>{error}</p>
+                            <p>{errorMessage}</p>
                         </div>
                     )}
 

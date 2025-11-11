@@ -1,65 +1,160 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+import { useState } from "react";
+
+import FormInput from "@/components/input";
+import { FormType } from "@/types/formType";
+import { ResultType } from "@/types/resultType";
+
+import { postPrediction } from "@/api/api";
+
+export default function HomePage() {
+    const [formData, setFormData] = useState<FormType>({
+        age: 55,
+        income_bracket: 4,
+        party_id_strength: 8,
+        tv_news_hours: 3,
+        social_media_hours: 1,
+        trust_media: 1,
+        civic_participation: 2,
+    });
+
+    const [result, setResult] = useState<ResultType | null>(null); // { predicted_class: 1, predicted_candidate: 'Candidato B' }
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData((prevData) => ({
+            ...prevData,
+            // Convertimos el valor a número, ya que el input es 'type="number"'
+            [name]: parseInt(value, 10),
+        }));
+    };
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault(); // Evita que la página se recargue
+        setIsLoading(true);
+        setError(false);
+        setResult(null);
+
+        try {
+            const response = await postPrediction(formData);
+
+            if (response.status) {
+                setResult(response.data);
+            } else {
+                setError(true);
+                setErrorMessage(response.error || "Error desconocido");
+            }
+        } catch (error) {
+            setError(true);
+            setErrorMessage((error as Error).message);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return (
+        <main className="bg-white text-white flex items-center justify-center p-4">
+            <div className="max-w-3xl w-full bg-white-900 rounded-lg shadow-xl p-8">
+                <h1 className="text-3xl font-bold text-center mb-2 text-green-800">
+                    Predicción de Intención de Voto (k-NN)
+                </h1>
+                <p className="text-center text-gray-400 mb-6">
+                    Responde la siguiente encuesta para predecir tu intención de
+                    voto.
+                </p>
+
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    {/* Grid para los campos del formulario */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Generamos un campo de input reutilizable */}
+                        <FormInput
+                            label="Edad"
+                            name="age"
+                            value={formData.age}
+                            onChange={handleChange}
+                        />
+                        <FormInput
+                            label="Nivel de Ingresos (1-5)"
+                            name="income_bracket"
+                            value={formData.income_bracket}
+                            onChange={handleChange}
+                        />
+                        <FormInput
+                            label="Fuerza de ID de Partido (1-10)"
+                            name="party_id_strength"
+                            value={formData.party_id_strength}
+                            onChange={handleChange}
+                        />
+                        <FormInput
+                            label="Horas de Noticias TV"
+                            name="tv_news_hours"
+                            value={formData.tv_news_hours}
+                            onChange={handleChange}
+                        />
+                        <FormInput
+                            label="Horas de Redes Sociales"
+                            name="social_media_hours"
+                            value={formData.social_media_hours}
+                            onChange={handleChange}
+                        />
+                        <FormInput
+                            label="Confianza en Medios (1-3)"
+                            name="trust_media"
+                            value={formData.trust_media}
+                            onChange={handleChange}
+                        />
+                        <FormInput
+                            label="Participación Cívica (1-3)"
+                            name="civic_participation"
+                            value={formData.civic_participation}
+                            onChange={handleChange}
+                        />
+                    </div>
+
+                    {/* --- Botón de Envío --- */}
+                    <button
+                        type="submit"
+                        disabled={isLoading}
+                        className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-101 hover:cursor-pointer">
+                        {isLoading
+                            ? "Prediciendo..."
+                            : "Predecir Intención de Voto"}
+                    </button>
+                </form>
+
+                {/* --- Sección de Resultados --- */}
+                <div className="mt-8">
+                    {/* Error */}
+                    {error && (
+                        <div className="bg-red-800 border border-red-600 text-white p-4 rounded-lg">
+                            <h3 className="font-bold">Error</h3>
+                            <p>{error}</p>
+                        </div>
+                    )}
+
+                    {/* Resultado Exitoso */}
+                    {result && (
+                        <div className="bg-green-800 border border-green-600 text-white p-4 rounded-lg">
+                            <h3 className="font-bold text-lg mb-2">
+                                Resultado de la Predicción:
+                            </h3>
+                            <p className="text-2xl">
+                                Candidato:{" "}
+                                <span className="font-mono text-green-300">
+                                    {result.predicted_candidate}
+                                </span>
+                            </p>
+                            <p className="text-sm mt-2">
+                                (Clase predicha: {result.predicted_class})
+                            </p>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </main>
+    );
 }

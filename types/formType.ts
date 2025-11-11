@@ -6,4 +6,6 @@ export interface FormType {
     social_media_hours: number;
     trust_media: number;
     civic_participation: number;
+    primary_choice: string;
+    secondary_choice: string;
 }

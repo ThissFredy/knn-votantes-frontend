@@ -1,12 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import FormInput from "@/components/input";
+import FormSelect from "@/components/FormSelect";
+
 import { FormType } from "@/types/formType";
 import { ResultType } from "@/types/resultType";
+import { CandidateType } from "@/types/candidatesType";
 
 import { postPrediction } from "@/api/api";
+import { getCandidates } from "@/api/api";
 
 export default function HomePage() {
     const [formData, setFormData] = useState<FormType>({
@@ -17,21 +21,49 @@ export default function HomePage() {
         social_media_hours: 1,
         trust_media: 1,
         civic_participation: 2,
+        primary_choice: "Candidato A",
+        secondary_choice: "Candidato B",
     });
 
     const [result, setResult] = useState<ResultType | null>(null); // { predicted_class: 1, predicted_candidate: 'Candidato B' }
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(false);
+    const [candidates, setCandidates] = useState<CandidateType[]>([]);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData((prevData) => ({
             ...prevData,
-            // Convertimos el valor a número, ya que el input es 'type="number"'
             [name]: parseInt(value, 10),
         }));
     };
+
+    const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: value, // Guarda el valor como string
+        }));
+    };
+
+    useEffect(() => {
+        // Cargar los candidatos al montar el componente
+        const fetchCandidates = async () => {
+            try {
+                const response = await getCandidates();
+                if (response.status) {
+                    setCandidates(response.data);
+                } else {
+                    console.error("Error fetching candidates:", response.error);
+                }
+            } catch (error) {
+                console.error("Error fetching candidates:", error);
+            }
+        };
+
+        fetchCandidates();
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault(); // Evita que la página se recargue
@@ -112,6 +144,28 @@ export default function HomePage() {
                             name="civic_participation"
                             value={formData.civic_participation}
                             onChange={handleChange}
+                        />
+                        {/* Input seleccion */}
+                        <FormSelect
+                            label="Eleccion Primaria"
+                            name="primary_choice"
+                            value={formData.primary_choice}
+                            onChange={handleSelectChange}
+                            options={candidates.map((candidate) => ({
+                                value: candidate.name,
+                                label: candidate.name,
+                            }))}
+                        />
+
+                        <FormSelect
+                            label="Elección Secundaria"
+                            name="secondary_choice"
+                            value={formData.secondary_choice}
+                            onChange={handleSelectChange}
+                            options={candidates.map((candidate) => ({
+                                value: candidate.name,
+                                label: candidate.name,
+                            }))}
                         />
                     </div>
 

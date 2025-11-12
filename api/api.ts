@@ -5,7 +5,7 @@ import { CandidateType } from "@/types/candidatesType";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export async function postPrediction(data: FormType): Promise<ResponseType> {
+export async function postPrediction(data: any): Promise<ResponseType> {
     try {
         console.log("Posting prediction to API:", API_URL + "/predict", data);
         const response = await fetch(API_URL + "/predict", {

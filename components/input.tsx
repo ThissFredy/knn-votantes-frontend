@@ -3,6 +3,7 @@ interface FormInputProps {
     name: string;
     value: string | number;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    props?: any;
 }
 
 export default function FormInput({
@@ -10,6 +11,7 @@ export default function FormInput({
     name,
     value,
     onChange,
+    props,
 }: FormInputProps) {
     return (
         <div className="flex flex-col">
@@ -24,6 +26,7 @@ export default function FormInput({
                 onChange={onChange}
                 required
                 className="bg-green-900 text-white rounded-lg focus:bg-green-700 focus:outline-none p-2.5 transition-colors hover:bg-green-800"
+                {...props}
             />
         </div>
     );

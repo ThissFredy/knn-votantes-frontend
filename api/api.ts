@@ -1,5 +1,3 @@
-import { ResultType } from "@/types/resultType";
-import { FormType } from "@/types/formType";
 import { ResponseType } from "@/types/responseType";
 import { CandidateType } from "@/types/candidatesType";
 
@@ -24,9 +22,12 @@ export async function postPrediction(data: any): Promise<ResponseType> {
             };
         }
 
+        const responseData = await response.json();
+        console.log("Prediction posted successfully", responseData);
+
         return {
             status: true,
-            data: await response.json(),
+            data: await responseData,
         };
     } catch (error) {
         console.error("Error posting prediction:", error);
@@ -57,7 +58,15 @@ export async function getStatus(): Promise<{ status: string }> {
 export async function getCandidates(): Promise<ResponseType> {
     try {
         console.log("Fetching candidates from API:", API_URL + "/candidates");
-        const response = await fetch(API_URL + "/candidates");
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 4000);
+
+        const response = await fetch(API_URL + "/candidates", {
+            signal: controller.signal,
+        });
+
+        clearTimeout(timeoutId);
 
         if (!response.ok) {
             return {
@@ -77,6 +86,12 @@ export async function getCandidates(): Promise<ResponseType> {
         };
     } catch (error) {
         console.error("Error fetching candidates:", error);
+        if ((error as Error).name === "AbortError") {
+            return {
+                status: false,
+                error: "Request timed out",
+            };
+        }
         return {
             status: false,
             error: (error as Error).message,

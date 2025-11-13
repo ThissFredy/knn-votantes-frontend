@@ -2,7 +2,6 @@ export default function Error() {
     return (
         <main className="bg-white text-white flex items-center justify-center p-4 min-h-screen">
             <div className="max-w-lg w-full bg-white rounded-lg shadow-xl p-10 text-center border-2 border-red-100">
-                {/* Icono de Error/Alerta */}
                 <svg
                     className="w-20 h-20 text-red-500 mx-auto mb-6"
                     fill="none"
@@ -25,8 +24,7 @@ export default function Error() {
                     predicciones.
                 </p>
                 <p className="text-gray-500">
-                    Por favor, inténtalo de nuevo más tarde o contacta al
-                    administrador.
+                    Por favor, inténtalo de nuevo más tarde.
                 </p>
             </div>
         </main>

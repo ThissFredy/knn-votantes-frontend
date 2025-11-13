@@ -1,24 +1,31 @@
 export interface FormType {
-    ord_has_children: number;
-    ord_home_owner: number;
-    ord_public_sector: number;
-    ord_union_member: number;
-    nom__primary_choice_CAND_Azon: number;
-    nom__primary_choice_CAND_Boreal: number;
-    nom__primary_choice_CAND_Civico: number;
-    nom__primary_choice_CAND_Demetra: number;
-    nom__primary_choice_CAND_Electra: number;
-    nom__primary_choice_CAND_Frontera: number;
-    nom__primary_choice_CAND_Gaia: number;
-    nom__primary_choice_CAND_Halley: number;
-    nom__primary_choice_CAND_Icaro: number;
-    nom__primary_choice_CAND_Jade: number;
-}
-
-export interface UserInput {
+    age: number;
+    household_size: number;
+    refused_count: number;
+    tv_news_hours: number;
+    social_media_hours: number;
+    job_tenure_years: number;
     has_children: number;
+    gender: number;
+    urbanicity: number;
+    education: number;
+    employment_status: number;
+    income_bracket: number;
+    employment_sector: number;
+    marital_status: number;
+    small_biz_owner: number;
+    owns_car: number;
+    preference_strength: number;
+    survey_confidence: number;
+    trust_media: number;
+    civic_participation: number;
+    wa_groups: number;
+    voted_last: number;
     home_owner: number;
+    attention_check: number;
     public_sector: number;
+    party_id_strength: number;
     union_member: number;
-    primary_choice: string; // "CAND_Azon", "CAND_Boreal", etc.
+    primary_choice: string;
+    secondary_choice: string;
 }

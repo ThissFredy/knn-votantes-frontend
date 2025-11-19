@@ -4,97 +4,97 @@ import { CandidateType } from "@/types/candidatesType";
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function postPrediction(data: any): Promise<ResponseType> {
-    try {
-        console.log("Posting prediction to API:", API_URL + "/predict", data);
-        const response = await fetch(API_URL + "/predict", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-        });
+  try {
+    console.log("Posting prediction to API:", API_URL + "/predict", data);
+    const response = await fetch(API_URL + "/predict", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
 
-        if (!response.ok) {
-            return {
-                status: false,
-                error: `Error ${response.status} del servidor`,
-                message: await response.text(),
-            };
-        }
-
-        const responseData = await response.json();
-        console.log("Prediction posted successfully", responseData);
-
-        return {
-            status: true,
-            data: await responseData,
-        };
-    } catch (error) {
-        console.error("Error posting prediction:", error);
-        return {
-            status: false,
-            error: (error as Error).message,
-        };
+    if (!response.ok) {
+      return {
+        status: false,
+        error: `Error ${response.status} del servidor`,
+        message: await response.text(),
+      };
     }
+
+    const responseData = await response.json();
+    console.log("Prediction posted successfully", responseData);
+
+    return {
+      status: true,
+      data: await responseData,
+    };
+  } catch (error) {
+    console.error("Error posting prediction:", error);
+    return {
+      status: false,
+      error: "Error al conectar con el servidor",
+    };
+  }
 }
 
 export async function getStatus(): Promise<{ status: string }> {
-    try {
-        console.log("Fetching status from API:", API_URL + "/status");
-        const response = await fetch(API_URL + "/status");
+  try {
+    console.log("Fetching status from API:", API_URL + "/status");
+    const response = await fetch(API_URL + "/status");
 
-        if (!response.ok) {
-            throw new Error("Network response was not ok");
-        }
-
-        const result = await response.json();
-        return result;
-    } catch (error) {
-        console.error("Error fetching status:", error);
-        throw error;
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
     }
+
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.error("Error fetching status:", error);
+    throw error;
+  }
 }
 
 export async function getCandidates(): Promise<ResponseType> {
-    try {
-        console.log("Fetching candidates from API:", API_URL + "/candidates");
+  try {
+    console.log("Fetching candidates from API:", API_URL + "/candidates");
 
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 4000);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
 
-        const response = await fetch(API_URL + "/candidates", {
-            signal: controller.signal,
-        });
+    const response = await fetch(API_URL + "/candidates", {
+      signal: controller.signal,
+    });
 
-        clearTimeout(timeoutId);
+    clearTimeout(timeoutId);
 
-        if (!response.ok) {
-            return {
-                status: false,
-                error: `Error ${response.status} del servidor`,
-                message: await response.text(),
-            };
-        }
-
-        console.log("Candidates fetched successfully", response);
-
-        const result = await response.json();
-        console.log("Candidates data:", result);
-        return {
-            status: true,
-            data: result.candidates as CandidateType[],
-        };
-    } catch (error) {
-        console.error("Error fetching candidates:", error);
-        if ((error as Error).name === "AbortError") {
-            return {
-                status: false,
-                error: "Request timed out",
-            };
-        }
-        return {
-            status: false,
-            error: (error as Error).message,
-        };
+    if (!response.ok) {
+      return {
+        status: false,
+        error: `Error ${response.status} del servidor`,
+        message: await response.text(),
+      };
     }
+
+    console.log("Candidates fetched successfully", response);
+
+    const result = await response.json();
+    console.log("Candidates data:", result);
+    return {
+      status: true,
+      data: result.candidates as CandidateType[],
+    };
+  } catch (error) {
+    console.error("Error fetching candidates:", error);
+    if ((error as Error).name === "AbortError") {
+      return {
+        status: false,
+        error: "Request timed out",
+      };
+    }
+    return {
+      status: false,
+      error: (error as Error).message,
+    };
+  }
 }

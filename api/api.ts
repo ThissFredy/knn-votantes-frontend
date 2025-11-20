@@ -1,5 +1,6 @@
 import { ResponseType } from "@/types/responseType";
 import { CandidateType } from "@/types/candidatesType";
+import { HealthType } from "@/types/healthType";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -95,6 +96,31 @@ export async function getCandidates(): Promise<ResponseType> {
         return {
             status: false,
             error: (error as Error).message,
+        };
+    }
+}
+
+export async function getHealth(): Promise<HealthType> {
+    try {
+        console.log("Fetching health status from API:", API_URL + "/health");
+        const response = await fetch(API_URL + "/health");
+
+        if (!response.ok) {
+            return {
+                status: false,
+                message: "Base de datos no disponible",
+            };
+        }
+
+        return {
+            status: true,
+            message: "Base de datos funcionando correctamente",
+        };
+    } catch (error) {
+        console.error("Error fetching health status:", error);
+        return {
+            status: false,
+            message: "No se pudo conectar con la base de datos",
         };
     }
 }

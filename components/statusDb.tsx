@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getHealth } from "@/api/api";
 
-export default function StatusDb() {
+function StatusDb() {
     const [isConnected, setIsConnected] = useState<boolean | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -16,7 +16,7 @@ export default function StatusDb() {
         };
 
         checkStatus();
-        const interval = setInterval(checkStatus, 20000);
+        const interval = setInterval(checkStatus, 10000);
         return () => clearInterval(interval);
     }, []);
 
@@ -59,3 +59,4 @@ export default function StatusDb() {
         </div>
     );
 }
+export default React.memo(StatusDb);

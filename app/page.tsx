@@ -216,7 +216,7 @@ export default function HomePage() {
     const [isLoading, setIsLoading] = useState(false);
     const [isPageLoading, setIsPageLoading] = useState(true);
     const [error, setError] = useState(false);
-    const [dataBaseStatus, setDataBaseStatus] = useState(false);
+    const [dataBaseStatus, setDataBaseStatus] = useState<boolean>(false);
     const [backError, setBackerror] = useState(false);
     const [candidates, setCandidates] = useState<CandidateType[]>([]);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -309,7 +309,8 @@ export default function HomePage() {
         <Error />
     ) : (
         <main className="bg-white text-white items-center justify-center p-4 min-h-screen">
-            <StatusDb setDataBaseStatus={dataBaseStatus} />
+            <StatusDb />
+            <Backend />
             <Presentation candidates={candidates} />
             <div className="w-3/4 mx-auto bg-white rounded-lg shadow-2xl p-8 my-8">
                 <h1 className="text-3xl font-bold text-center mb-2 text-green-800">

@@ -1,16 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getCandidates } from "@/api/api";
+import React, { useEffect, useState } from "react";
+import { getBackendHealth } from "@/api/api";
 
-export default function StatusBackend() {
+function StatusBackend() {
     const [isConnected, setIsConnected] = useState<boolean | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const checkStatus = async () => {
             setIsLoading(true);
-            const result = await getCandidates();
+            const result = await getBackendHealth();
             setIsConnected(result.status);
             setIsLoading(false);
         };
@@ -59,3 +59,4 @@ export default function StatusBackend() {
         </div>
     );
 }
+export default React.memo(StatusBackend);

@@ -295,7 +295,9 @@ export default function HomePage() {
             }
         } catch (error) {
             setError(true);
-            setErrorMessage((error as Error).message);
+            setErrorMessage(
+                "Error al conectar con el servidor: " + (error as Error).message
+            );
         } finally {
             setIsLoading(false);
         }
@@ -307,8 +309,7 @@ export default function HomePage() {
         <Error />
     ) : (
         <main className="bg-white text-white items-center justify-center p-4 min-h-screen">
-            <Backend />
-            <StatusDb />
+            <StatusDb setDataBaseStatus={dataBaseStatus} />
             <Presentation candidates={candidates} />
             <div className="w-3/4 mx-auto bg-white rounded-lg shadow-2xl p-8 my-8">
                 <h1 className="text-3xl font-bold text-center mb-2 text-green-800">
